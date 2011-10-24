@@ -8,7 +8,7 @@ MODULE = 'db'
 
 # Commands that are specific to your module
 
-COMMANDS = ['db:export','db:import']
+COMMANDS = ['db:export','db:import','db:update']
 
 def execute(**kargs):
     command = kargs.get("command")
@@ -20,6 +20,17 @@ def execute(**kargs):
         print "~ Generating ddl database file"
         print "~ "
         java_cmd = app.java_cmd([], None, "play.modules.db.Exporter", args)
+        try:
+            subprocess.call(java_cmd, env=os.environ)
+        except OSError:
+            print "Could not execute the java executable, please make sure the JAVA_HOME environment variable is set properly (the java executable should reside at JAVA_HOME/bin/java). "
+            sys.exit(-1)
+        print
+
+    if command == "db:update":
+        print "~ Generating ddl update file"
+        print "~ "
+        java_cmd = app.java_cmd([], None, "play.modules.db.Updater", args)
         try:
             subprocess.call(java_cmd, env=os.environ)
         except OSError:
